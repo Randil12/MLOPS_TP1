@@ -349,3 +349,55 @@ des donnees recentes differe de l'echantillon de reference. Les variables
 numeriques sont comparees avec des tests statistiques adaptes, et les variables
 categorielles avec des tests de distribution. Ce rapport sert a l'analyse
 approfondie, tandis que la detection maison de `/predict` sert a l'alerte rapide.
+
+## CI/CD
+
+Le projet utilise GitHub Actions pour executer une pipeline de CI definie dans :
+
+```text
+.github/workflows/ci.yml
+```
+
+La CI se declenche automatiquement :
+
+- a chaque `push` sur les branches `main` et `develop` ;
+- a chaque `pull_request` vers `main`.
+
+Verifications automatisees :
+
+- recuperation du code avec `actions/checkout` ;
+- installation de Python 3.11 avec `actions/setup-python` ;
+- installation des dependances depuis `requirements.txt` ;
+- creation d'un petit jeu de donnees de test si la donnee brute n'est pas presente ;
+- generation des artefacts avec `python main.py` ;
+- verification de la presence de `artifacts/model.pkl` et `artifacts/reference_sample.csv` ;
+- execution des tests avec `pytest tests/ -v` ;
+- demarrage de l'API avec `uvicorn` ;
+- verification de la route `/health` avec `curl`.
+
+Pour lancer les tests en local :
+
+```cmd
+.\env\Scripts\python.exe -m pytest tests/ -v
+```
+
+Ou, si l'environnement virtuel est deja active :
+
+```cmd
+pytest tests/ -v
+```
+
+La CI sert a verifier qu'une modification ne casse pas le projet : preparation des
+donnees, API, tests de validation et test de non-regression du modele.
+
+Le CD correspondrait aux etapes de mise a disposition d'une nouvelle version apres
+validation par la CI. Pour ce projet, on pourrait ajouter :
+
+- publier une image Docker de l'API sur un registry, par exemple Docker Hub ou GitHub Container Registry ;
+- deployer automatiquement l'API mise a jour sur un environnement de staging ;
+- publier le modele entraine dans MLflow Model Registry avec un tag ou alias `staging` ;
+- declencher un redeploiement automatique apres promotion du modele ou de l'image en production.
+
+Ces etapes ne sont pas implementees dans ce TP. Elles representent la suite logique :
+la CI valide la qualite, puis le CD prepare ou effectue le deploiement controle de
+la nouvelle version.
