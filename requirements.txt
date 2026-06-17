@@ -1,2 +1,9 @@
 pandas
 scikit-learn
+mlflow
+dvc
+fastapi
+uvicorn
+evidently
+pytest
+pytest

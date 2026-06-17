@@ -14,3 +14,9 @@ artifacts/*.pkl
 # MLflow local tracking store
 mlruns/
 mlflow.db
+
+# Airflow runtime files
+logs/*
+!logs/.gitkeep
+airflow/logs/*
+!airflow/logs/.gitkeep
