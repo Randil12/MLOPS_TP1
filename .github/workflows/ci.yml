@@ -24,6 +24,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Generer les artefacts
+        run: python main.py
+
       - name: Verifier que les artefacts existent
         run: |
           test -f artifacts/model.pkl || (echo "Modele manquant" && exit 1)
