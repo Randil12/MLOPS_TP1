@@ -1,0 +1,39 @@
+name: CI Pipeline ML
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Configurer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer les dependances
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verifier que les artefacts existent
+        run: |
+          test -f artifacts/model.pkl || (echo "Modele manquant" && exit 1)
+          test -f artifacts/reference_sample.csv || (echo "Echantillon de reference manquant" && exit 1)
+
+      - name: Lancer les tests
+        run: pytest tests/ -v
+
+      - name: Verifier que l'API demarre
+        run: |
+          uvicorn app:app --port 8001 &
+          sleep 5
+          curl -f http://localhost:8001/health || exit 1
