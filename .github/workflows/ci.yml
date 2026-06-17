@@ -66,5 +66,11 @@ jobs:
       - name: Verifier que l'API demarre
         run: |
           uvicorn app:app --port 8001 &
-          sleep 5
-          curl -f http://localhost:8001/health || exit 1
+          for i in {1..30}; do
+            if curl -f http://localhost:8001/health; then
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "API indisponible apres attente"
+          exit 1
