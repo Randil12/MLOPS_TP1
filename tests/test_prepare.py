@@ -107,3 +107,7 @@ def test_prepare_data_raises_when_target_missing(tmp_path):
             test_size=0.2,
             random_state=42,
         )
+
+
+def test_echec_volontaire_ci():
+    assert False
